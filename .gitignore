@@ -172,3 +172,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Project-specific runtime files
+osu_downloader_config.json
+osu_downloader.log
+osu_packs/
+*.part

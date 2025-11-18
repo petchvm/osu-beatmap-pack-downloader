@@ -1,0 +1,20 @@
+[project]
+name = "osu-beatmap-pack-downloader"
+version = "0.1.0"
+description = "A powerful and user-friendly tool for automatically downloading osu! Beatmap Packs"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.31.0",
+    "urllib3>=2.0.0",
+]
+
+[project.scripts]
+osu-downloader = "osu_beatmap_pack_downloader.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = []

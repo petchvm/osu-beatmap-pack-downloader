@@ -17,71 +17,106 @@ A powerful and user-friendly tool for automatically downloading osu! Beatmap Pac
 
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Installation](#installation)
-  - [Using pip](#using-pip)
   - [Using uv (Recommended)](#using-uv-recommended)
+  - [Using pip](#using-pip)
 - [Basic Usage](#basic-usage)
 - [Advanced Usage](#advanced-usage)
 - [Command-Line Options](#command-line-options)
+- [Configuration](#configuration)
 - [Understanding the Output](#understanding-the-output)
 - [Troubleshooting](#troubleshooting)
+- [Development](#development)
 - [How It Works](#how-it-works)
 - [FAQ](#faq)
+
+## Quick Start
+
+Get started in 60 seconds:
+
+```bash
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone and install
+git clone https://github.com/yourusername/osu-beatmap-pack-downloader.git
+cd osu-beatmap-pack-downloader
+uv sync
+
+# Download packs
+uv run osu-downloader --start 1580 --end 1590
+```
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.6 or higher
+- Python 3.13 or higher
 - Internet connection
-- Basic understanding of command-line interfaces
-
-### Using pip
-
-1. **Install Python**: Make sure you have Python installed. If not, download and install it from [python.org](https://python.org).
-
-2. **Download the script**: Save the `osu_downloader_advanced.py` script to your computer.
-
-3. **Install required packages**:
-   ```bash
-   pip install requests tqdm
-   ```
+- ~500MB free disk space per beatmap pack
 
 ### Using uv (Recommended)
 
-[uv](https://github.com/astral-sh/uv) is a faster, more reliable alternative to pip. Here's how to set up your environment with uv:
+[uv](https://github.com/astral-sh/uv) is a fast, reliable Python package manager. Here's how to install:
 
 1. **Install uv**:
    ```bash
-   # On macOS/Linux
-   curl -sSf https://install.undefined.sh | python3 -
+   # macOS/Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
 
-   # On Windows (PowerShell)
-   powershell -c "Invoke-WebRequest -UseBasicParsing https://install.undefined.sh | python -"
+   # Windows (PowerShell)
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
    ```
 
-2. **Create a virtual environment**:
+2. **Clone the repository**:
    ```bash
-   # Create a new directory for your project
-   mkdir osu-downloader
-   cd osu-downloader
+   git clone https://github.com/yourusername/osu-beatmap-pack-downloader.git
+   cd osu-beatmap-pack-downloader
+   ```
 
-   # Create and activate a virtual environment
-   uv venv
-   
+3. **Install dependencies**:
+   ```bash
+   uv sync
+   ```
+
+   This will automatically:
+   - Create a virtual environment (`.venv/`)
+   - Install all dependencies from `uv.lock`
+   - Set up the `osu-downloader` command
+
+4. **Verify installation**:
+   ```bash
+   uv run osu-downloader --help
+   ```
+
+**Note:** The `uv.lock` file ensures everyone gets the same dependency versions for reproducibility.
+
+### Using pip
+
+If you prefer pip or can't use uv:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/osu-beatmap-pack-downloader.git
+   cd osu-beatmap-pack-downloader
+   ```
+
+2. **Create virtual environment** (recommended):
+   ```bash
+   python -m venv .venv
+
    # On Windows
    .venv\Scripts\activate
-   
+
    # On macOS/Linux
    source .venv/bin/activate
    ```
 
-3. **Install required packages**:
+3. **Install package**:
    ```bash
-   uv pip install requests tqdm
+   pip install -e .
    ```
-
-4. **Download the script**: Save the `osu_downloader_advanced.py` script to the project directory.
 
 ## Basic Usage
 
@@ -90,7 +125,7 @@ A powerful and user-friendly tool for automatically downloading osu! Beatmap Pac
 To download packs #1580 through #1590:
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590
+osu-downloader --start 1580 --end 1590
 ```
 
 ### Downloading Specific Packs
@@ -98,7 +133,7 @@ python osu_downloader_advanced.py --start 1580 --end 1590
 To download specific packs (e.g., #1586, #1587, and #1590):
 
 ```bash
-python osu_downloader_advanced.py --packs 1586,1587,1590
+osu-downloader --packs 1586,1587,1590
 ```
 
 ### Specifying a Download Directory
@@ -106,7 +141,11 @@ python osu_downloader_advanced.py --packs 1586,1587,1590
 By default, packs are saved to `./osu_packs`. To change this:
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --dir "D:\OsuBeatmaps"
+# Unix/Linux/macOS
+osu-downloader --start 1580 --end 1590 --dir ~/osu-packs
+
+# Windows
+osu-downloader --start 1580 --end 1590 --dir "D:\OsuBeatmaps"
 ```
 
 ## Advanced Usage
@@ -116,7 +155,7 @@ python osu_downloader_advanced.py --start 1580 --end 1590 --dir "D:\OsuBeatmaps"
 Increase download speed by running multiple downloads simultaneously:
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --threads 5
+osu-downloader --start 1580 --end 1590 --threads 5
 ```
 
 ### Adjusting Chunk Size
@@ -124,7 +163,7 @@ python osu_downloader_advanced.py --start 1580 --end 1590 --threads 5
 For faster downloads on high-speed connections, increase the chunk size:
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --chunk-size 16384
+osu-downloader --start 1580 --end 1590 --chunk-size 16384
 ```
 
 ### Limiting Bandwidth
@@ -132,7 +171,7 @@ python osu_downloader_advanced.py --start 1580 --end 1590 --chunk-size 16384
 Limit download speed (useful when you need to use your network for other tasks):
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --bandwidth-limit 5.0
+osu-downloader --start 1580 --end 1590 --bandwidth-limit 5.0
 ```
 This will limit each thread to 5 MB/s (total bandwidth used will be `threads × limit`).
 
@@ -141,7 +180,7 @@ This will limit each thread to 5 MB/s (total bandwidth used will be `threads × 
 Resume any previously failed downloads:
 
 ```bash
-python osu_downloader_advanced.py --retry-failed
+osu-downloader --retry-failed
 ```
 
 ### Disable Resuming
@@ -149,7 +188,7 @@ python osu_downloader_advanced.py --retry-failed
 Start fresh downloads even if partial downloads exist:
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --no-resume
+osu-downloader --start 1580 --end 1590 --no-resume
 ```
 
 ### Disable Delays
@@ -157,7 +196,7 @@ python osu_downloader_advanced.py --start 1580 --end 1590 --no-resume
 For maximum speed (use with caution as it might stress the server):
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --no-delay
+osu-downloader --start 1580 --end 1590 --no-delay
 ```
 
 ### Debugging
@@ -165,7 +204,7 @@ python osu_downloader_advanced.py --start 1580 --end 1590 --no-delay
 Increase log verbosity for troubleshooting:
 
 ```bash
-python osu_downloader_advanced.py --start 1580 --end 1590 --log-level DEBUG
+osu-downloader --start 1580 --end 1590 --log-level DEBUG
 ```
 
 ## Command-Line Options
@@ -186,6 +225,41 @@ Here's the complete list of available options:
 | `--config` | Configuration file path | `osu_downloader_config.json` |
 | `--bandwidth-limit` | Limit download bandwidth in MB/s per thread | None |
 | `--log-level` | Set logging level (DEBUG, INFO, WARNING, ERROR) | INFO |
+
+## Configuration
+
+The downloader creates a configuration file at `osu_downloader_config.json` to track your downloads and remember settings.
+
+### Configuration File Structure
+
+```json
+{
+  "download_dir": "./osu_packs",
+  "threads": 3,
+  "chunk_size": 8192,
+  "delay": true,
+  "completed_packs": [1589, 1590, 1631, 1632],
+  "failed_packs": []
+}
+```
+
+### Configuration Options
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `download_dir` | string | Default download location |
+| `threads` | integer | Default concurrent downloads |
+| `chunk_size` | integer | Download chunk size in bytes |
+| `delay` | boolean | Whether to add delays between downloads |
+| `completed_packs` | array | List of successfully downloaded pack numbers |
+| `failed_packs` | array | List of failed pack numbers |
+
+### Managing Configuration
+
+- **Location:** Same directory where you run the command
+- **Editing:** Safe to edit manually (ensure valid JSON)
+- **Reset:** Delete the file to start fresh
+- **Backup:** Copy this file to preserve your download history
 
 ## Understanding the Output
 
@@ -235,6 +309,57 @@ Make sure you have write permissions to the download directory.
 
 The log file contains detailed information about each action the downloader takes. If you're having issues, check this file for clues. You can increase log verbosity with `--log-level DEBUG`.
 
+## Development
+
+### Setting Up for Development
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/osu-beatmap-pack-downloader.git
+cd osu-beatmap-pack-downloader
+
+# Install with uv
+uv sync
+
+# Install in editable mode
+uv pip install -e .
+
+# Run from source
+uv run osu-downloader --help
+```
+
+### Project Structure
+
+```
+osu-beatmap-pack-downloader/
+├── src/
+│   └── osu_beatmap_pack_downloader/
+│       ├── __init__.py          # Package initialization
+│       └── cli.py               # Main CLI application
+├── .venv/                       # Virtual environment (auto-created)
+├── pyproject.toml              # Project configuration & dependencies
+├── uv.lock                     # Locked dependencies (commit this!)
+├── README.md                   # This file
+├── LICENSE                     # MIT License
+└── osu_packs/                  # Default download location (created at runtime)
+```
+
+### Architecture Overview
+
+The application consists of two main classes:
+
+- **DownloadManager** - Handles multi-threaded downloads using a producer-consumer pattern with `ThreadPoolExecutor` and `queue.Queue`. Manages progress tracking, URL pattern detection, and resume capability.
+
+- **ConfigManager** - Handles JSON persistence for tracking completed/failed downloads and user settings.
+
+### Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
 ## How It Works
 
 The osu! Beatmap Pack Downloader works by:
@@ -271,7 +396,7 @@ A: While technically possible, it's not recommended as it would put significant 
 
 ### Q: Will this work on Mac/Linux?
 
-A: Yes, the tool is compatible with any platform that supports Python 3.6+.
+A: Yes, the tool is compatible with any platform that supports Python 3.13+.
 
 ### Q: How can I see which packs I've already downloaded?
 
